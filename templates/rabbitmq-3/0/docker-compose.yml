@@ -1,0 +1,25 @@
+rabbitmq-datavolume:
+  labels:
+    io.rancher.container.hostname_override: container_name
+    io.rancher.container.start_once: true
+  volumes:
+    - /etc/rabbitmq
+    - /opt/rancher/bin
+    - /var/lib/rabbitmq
+  entrypoint: /bin/true
+  image: inabhi9/rancher-rabbitmq:latest
+
+rabbitmq:
+  labels:
+    io.rancher.sidekicks: rabbitmq-datavolume
+    io.rancher.container.hostname_override: container_name
+    io.rancher.scheduler.global: 'true'
+  image: inabhi9/rancher-rabbitmq:latest
+  restart: always
+  volumes_from:
+    - rabbitmq-datavolume
+  environment:
+    - RABBITMQ_ERLANG_COOKIE=${erlang_cookie}
+    - RABBITMQ_NET_TICKTIME=${net_ticktime}
+    - RABBITMQ_CLUSTER_PARTITION_HANDLING=${cluster_partition_handling}
+    - CONFD_ARGS=${confd_args}
